@@ -1,4 +1,4 @@
-function tets()
+function test()
 {
     alert("Hello world!");
 }
