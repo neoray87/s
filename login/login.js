@@ -1,18 +1,7 @@
-// הוספת היכולות של Firestore
+
 import { initializeApp } from "firebase/app";
 
 import { getAnalytics } from "firebase/analytics";
-
-// TODO: Add SDKs for Firebase products that you want to use
-
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-
-
-// Your web app's Firebase configuration
-
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-
 const firebaseConfig = {
 
   apiKey: "AIzaSyB8IFt-fo2KyTh4f0r9h0tYeu3YnxCiaSQ",
@@ -32,20 +21,11 @@ const firebaseConfig = {
   measurementId: "G-TTE31QX35E"
 
 };
-
-
-
-// Initialize Firebase
-
 const app = initializeApp(firebaseConfig);
 
 const analytics = getAnalytics(app);
 import { getFirestore, collection, addDoc, getDocs } from "firebase/firestore";
-
-// אתחול בסיס הנתונים
 const db = getFirestore(app);
-
-// פונקציה פשוטה שבודקת שהכל עובד ושולחת נתון לטבלה
 async function testDatabase() {
   try {
     const docRef = await addDoc(collection(db, "passwords"), {
@@ -58,5 +38,4 @@ async function testDatabase() {
   }
 }
 
-// קריאה לפונקציה כדי לבדוק את החיבור
 testDatabase();
