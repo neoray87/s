@@ -8,6 +8,7 @@ body{
     background-size: cover;
     font-family: Arial, sans-serif;
     text-align: center;
+    justify-items: center;
     padding: 50px;
 }
 h1{
@@ -18,20 +19,26 @@ h1{
     color: var(--title-color);
 }
 p{
-    font-family: "Cardo", serif;
     font-weight: 400;
-    font-style: normal;
     font-size: clamp(1.5rem, 4vw, 2.5rem);
     color: var(--text-color);
 }
+#features{
+    display: flex;
+    justify-content: center;
+    width: 60%;
+    align-items: center;
+    gap: 20%;
+    margin-top: 2vh;
+}
 .up{
     background-color: transparent;
+    border: 2px solid var(--button-color);
     color: var(--button-color);
     padding: 10px 20px;
     text-decoration: none;
-    border-radius: 5px;
-    font-family: "Cardo", serif;
-    font-weight: 400;
+    border-radius: 10px;
+    font-weight: 600;
     font-style: normal;
     font-size: clamp(1rem, 2vw, 1.5rem);
 }
@@ -40,7 +47,7 @@ p{
     color: #D9CFC7;
     padding: 10px 20px;
     text-decoration: none;
-    border-radius: 5px;
+    border-radius: 10px;
     font-family: "Cardo", serif;
     font-weight: 400;
     font-style: normal;
