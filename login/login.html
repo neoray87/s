@@ -7,9 +7,10 @@
     <body>
         <h1>ברוכים הבאים</h1>
         <p>אנא התחבר לחשבון שלך</p>
-        <input type="text" placeholder="שם משתמש">
-        <input type="password" placeholder="סיסמה">
-        <button onclick="login">התחבר</button>
+        <input type="text" id="username" placeholder="שם משתמש">
+        <input type="password" id="password" placeholder="סיסמה">
+        <button id="loginButton" onclick="checkIfUserExists(document.getElementById('username').value)">התחבר</button>
+        <p id="message"></p>
         <a href="register/register.html">אין לך חשבון? התחבר</a>
     </body>
 </html>

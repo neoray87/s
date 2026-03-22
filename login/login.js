@@ -1,6 +1,6 @@
 
 import { initializeApp } from "firebase/app";
-
+import { query, where, getDocs, collection } from "firebase/firestore";
 import { getAnalytics } from "firebase/analytics";
 const firebaseConfig = {
 
@@ -21,6 +21,7 @@ const firebaseConfig = {
   measurementId: "G-TTE31QX35E"
 
 };
+const message = document.getElementById("message").innerText;
 const app = initializeApp(firebaseConfig);
 
 const analytics = getAnalytics(app);
@@ -29,7 +30,7 @@ const db = getFirestore(app);
 async function testDatabase() {
   try {
     const docRef = await addDoc(collection(db, "passwords"), {
-      message: "החיבור מהאתר עובד!",
+      message:"החיבור מהאתר עובד!",
       time: new Date()
     });
     console.log("הנתון נשמר בהצלחה! מזהה המסמך: ", docRef.id);
@@ -37,5 +38,27 @@ async function testDatabase() {
     console.error("שגיאה בשמירת הנתון: ", e);
   }
 }
+async function checkIfUserExists(usernameToCheck) {
+  // 1. יצירת שאילתה: חפש באוסף "users" איפה ששדה "username" שווה לשם שהוכנס
+  const usersRef = collection(db, "users"); 
+  const q = query(usersRef, where("username", "==", usernameToCheck));
 
+  try {
+    const querySnapshot = await getDocs(q);
+    
+    // 2. בדיקה אם חזרו תוצאות
+    if (!querySnapshot.empty) {
+      console.log("המשתמש קיים במערכת!");
+      querySnapshot.forEach((doc) => {
+        console.log("נתוני המשתמש:", doc.data());
+      });
+      return true;
+    } else {
+      console.log("משתמש לא נמצא.");
+      return false;
+    }
+  } catch (error) {
+    console.error("שגיאה בחיפוש:", error);
+  }
+}
 testDatabase();
