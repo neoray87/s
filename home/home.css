@@ -25,10 +25,10 @@ p{
 }
 #features{
     display: flex;
-    justify-content: center;
+    justify-content: space-around;
     width: 60%;
     align-items: center;
-    gap: 20%;
+
     margin-top: 2vh;
 }
 .up{
@@ -48,9 +48,14 @@ p{
     border: 2px solid var(--button-color);
     box-shadow: 0 0 50px 10px #8b9aa1;
 }
+#buttons{
+    display: flex;
+    justify-content: space-around;
+    width: 20%;
+}
 .down{
-    background-color: #71604B;
-    color: #D9CFC7;
+    background-color: transparent;
+    color: var(--title-color);
     padding: 10px 20px;
     text-decoration: none;
     border-radius: 10px;
