@@ -12,6 +12,12 @@ body{
     padding: 5vh 0;
     gap: 4vh;
 }
+.material-symbols-outlined {
+    right: 0;
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: var(--button-color);
+    margin: 0;
+}
 h1{
     font-family: "Cardo", serif;
     font-weight: 700;
@@ -35,6 +41,13 @@ p{
     width: 60%;
     align-items: center;
     margin-top: 2vh;
+    margin-left: 8%;
+}
+#upButtons{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 75%;
 }
 .up{
     background-color: transparent;
@@ -56,23 +69,30 @@ p{
 }
 #buttons{
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     width: 30%;
 }
 .down{
     margin-top: 2%;
-    background-color: transparent;
-    color: var(--title-color);
     padding: 10px 20px;
     text-decoration: none;
-    border-radius: 10px;
     font-weight: 600;
     font-style: normal;
-    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-size: clamp(2rem, 4vw, 2.5rem);
 }
-#signup-button{
+#register-button{
     border: 2px solid transparent;
     box-shadow: 0 0 0 0 #8b9aa1;
+    border-radius: 10% / 30%;
+    color: var(--title-color);
+    background-color: transparent;
+    transition: all 0.2s ease;
+}
+#register-button:hover{
+    transition: all 0.7s ease;
+    border: 2px solid var(--title-color);
+    box-shadow: 0 0 50px 5px #8b9aa1;
+    background-color: rgba(255, 236, 212, 0.5);
 }
 #login-button{
     border: 2px solid var(--title-color);
