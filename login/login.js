@@ -28,33 +28,47 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function checkIfUserExists(usernameToCheck, passwordToCheck) {
     const messagesElement = document.getElementById("messages");
-    messagesElement.innerText = "בודק נתונים...";
     
-    // שים לב: שיניתי ל-Users עם U גדולה לפי התמונה ששלחת
+    // 1. הגדרת הפניה לאוסף (שים לב ל-Users עם U גדולה לפי הצילום שלך)
     const usersRef = collection(db, "Users"); 
+    
+    // 2. יצירת שאילתה למציאת המשתמש לפי השם בלבד
     const q = query(usersRef, where("username", "==", usernameToCheck));
+     const m = query(usersRef, where("password", "==", passwordToCheck));
 
     try {
         const querySnapshot = await getDocs(q);
         
+        // 3. בדיקה אם המשתמש בכלל קיים
         if (!querySnapshot.empty) {
+            // לוקחים את הנתונים של המסמך הראשון שנמצא
             const userData = querySnapshot.docs[0].data();
             
-            // בדיקת סיסמה
-            if (userData.password === passwordToCheck) {
-                messagesElement.innerText = "התחברת בהצלחה!";
-                // כאן תוכל להוסיף מעבר דף: window.location.href = "dashboard.html";
+            // 4. השוואת הסיסמה מה-DB לסיסמה שהמשתמש הקליד
+            if (query(usersRef, where("username", "==", usernameToCheck)) && query(usersRef, where("password", "==", passwordToCheck))) {
+                messagesElement.innerText = "התחברת בהצלחה! מעביר לדף הבית...";
+                messagesElement.style.color = "green";
+                
+                // הצעד הבא: שמירת המשתמש ב-Session ומעבר דף
+                sessionStorage.setItem("user", usernameToCheck);
+                setTimeout(() => {
+                    window.location.href = "index.html"; // שנה לנתיב שלך
+                }, 1500);
+                
                 return true;
             } else {
+                // חשוב: הודעה עמומה כדי לא לחשוף מידע לתוקף
                 messagesElement.innerText = "שם משתמש או סיסמה שגויים.";
+                messagesElement.style.color = "red";
                 return false;
             }
         } else {
             messagesElement.innerText = "שם משתמש או סיסמה שגויים.";
+            messagesElement.style.color = "red";
             return false;
         }
     } catch (error) {
-        console.error("שגיאה:", error);
+        console.error("Error signing in:", error);
         messagesElement.innerText = "שגיאה בתקשורת עם השרת.";
     }
 }
