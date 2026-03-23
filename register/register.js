@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyB8IFt-fo2KyTh4f0r9h0tYeu3YnxCiaSQ",
@@ -37,6 +37,18 @@ document.addEventListener('DOMContentLoaded', () => {
 // 4. פונקציית הרישום
 async function registerNewUser(email, password, displayName, age) {
     try {
+        if (await isUsernameTaken(displayName)) {
+            alert("שם משתמש כבר תפוס.");
+            return;
+        }
+        if (email.trim() === "" || password.trim() === "" || displayName.trim() === "" || age.trim() === "") {
+            alert("אנא מלא את כל השדות.");
+            return;
+        }
+        if (isNaN(age) || age <= 0) {
+            alert("אנא הזן גיל תקין.");
+            return;
+        }
         // יצירת המשתמש ב-Firebase Auth
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
@@ -56,4 +68,16 @@ async function registerNewUser(email, password, displayName, age) {
         console.error("שגיאה ברישום:", error.message);
         alert("שגיאה: " + error.message);
     }
+}
+
+async function isUsernameTaken(chosenName) {
+    const db = getFirestore();
+    const usersRef = collection(db, "Users");
+    
+    // שאילתה: חפש באוסף Users מסמך שבו השדה username שווה לשם שנבחר
+    const q = query(usersRef, where("username", "==", chosenName));
+    const querySnapshot = await getDocs(q);
+    
+    // אם ה-Snapshot לא ריק, סימן שמצאנו לפחות משתמש אחד עם השם הזה
+    return !querySnapshot.empty;
 }
