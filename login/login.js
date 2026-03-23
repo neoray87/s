@@ -1,5 +1,8 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+
 
 const firebaseConfig = {
     apiKey: "AIzaSyB8IFt-fo2KyTh4f0r9h0tYeu3YnxCiaSQ",
@@ -14,61 +17,35 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
 document.addEventListener('DOMContentLoaded', () => {
     const btn = document.getElementById('loginButton');
     if (btn) {
-        btn.addEventListener('click', () => {
-            const userVal = document.getElementById('username').value;
-            const passwordVal = document.getElementById('password').value;
-            checkIfUserExists(userVal, passwordVal);
-        });
+         document.getElementById('loginButton').addEventListener('click', () => {
+         const emailVal = document.getElementById('username').value; // תשתמש באימייל שרשמת ב-Console
+         const passwordVal = document.getElementById('password').value;
+         handleLogin(emailVal, passwordVal);
+});
     }
 });
-
-async function checkIfUserExists(usernameToCheck, passwordToCheck) {
+async function handleLogin(email, password) {
     const messagesElement = document.getElementById("messages");
     
-    // 1. הגדרת הפניה לאוסף (שים לב ל-Users עם U גדולה לפי הצילום שלך)
-    const usersRef = collection(db, "Users"); 
-    
-    // 2. יצירת שאילתה למציאת המשתמש לפי השם בלבד
-    const q = query(usersRef, where("username", "==", usernameToCheck));
-     const m = query(usersRef, where("password", "==", passwordToCheck));
-
     try {
-        const querySnapshot = await getDocs(q);
+        // כאן גוגל מבצעת את הבדיקה (האם קיים? האם הסיסמה נכונה?)
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
         
-        // 3. בדיקה אם המשתמש בכלל קיים
-        if (!querySnapshot.empty) {
-            // לוקחים את הנתונים של המסמך הראשון שנמצא
-            const userData = querySnapshot.docs[0].data();
-            
-            // 4. השוואת הסיסמה מה-DB לסיסמה שהמשתמש הקליד
-            if (query(usersRef, where("username", "==", usernameToCheck)) && query(usersRef, where("password", "==", passwordToCheck))) {
-                messagesElement.innerText = "התחברת בהצלחה! מעביר לדף הבית...";
-                messagesElement.style.color = "green";
-                
-                // הצעד הבא: שמירת המשתמש ב-Session ומעבר דף
-                sessionStorage.setItem("user", usernameToCheck);
-                setTimeout(() => {
-                    window.location.href = "index.html"; // שנה לנתיב שלך
-                }, 1500);
-                
-                return true;
-            } else {
-                // חשוב: הודעה עמומה כדי לא לחשוף מידע לתוקף
-                messagesElement.innerText = "שם משתמש או סיסמה שגויים.";
-                messagesElement.style.color = "red";
-                return false;
-            }
-        } else {
-            messagesElement.innerText = "שם משתמש או סיסמה שגויים.";
-            messagesElement.style.color = "red";
-            return false;
-        }
+        // אם הגענו לכאן - המשתמש קיים והסיסמה נכונה!
+        const user = userCredential.user;
+        messagesElement.innerText = "התחברת בהצלחה! מזהה: " + user.uid;
+        messagesElement.style.color = "green";
+        window.location.href = "../index.html"; 
+
     } catch (error) {
-        console.error("Error signing in:", error);
-        messagesElement.innerText = "שגיאה בתקשורת עם השרת.";
+        // אם גוגל לא מצאה את המשתמש או שהסיסמה שגויה, היא תזרוק שגיאה
+        console.error("שגיאה בקוד:", error.code);
+        messagesElement.innerText = "שם משתמש או סיסמה לא נכונים.";
+        messagesElement.style.color = "red";
     }
 }
