@@ -115,7 +115,7 @@ function showGuestUI() {
     document.getElementById('visitorIcon').style.display = 'block';
     document.getElementById('userAvatar').style.display = 'none';
     document.getElementById('welcomeText').textContent = "";
-    if(document.getElementById('buttons')) document.getElementById('buttons').style.display = 'block';
+    if(document.getElementById('buttons')) document.getElementById('buttons').style.display = 'flex';
 }
 
 // 2. פונקציית התפריט המתוקנת
