@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, setDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyB8IFt-fo2KyTh4f0r9h0tYeu3YnxCiaSQ",
@@ -73,7 +73,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
 
         console.log("מנסה לשלוח למייל:", email); // בדיקה ב-Console
 
-        emailjs.send("hizokimbaemona@gmail.com", "template_690f7ew", templateParams)
+        emailjs.send("service_f9wbbcs", "template_690f7ew", templateParams)
         .then(() => {
             alert("קוד אימות נשלח למייל!");
             document.getElementById('otpInput').style.display = 'block';
@@ -90,7 +90,6 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
 async function verifyAndCreateAccount() {
     const enteredCode = document.getElementById('otpInput').value;
     if (enteredCode === window.generatedCode) {
-        // עכשיו email כאן יתאים ל-email ששמרנו למעלה
         const { email, password, displayName, age } = window.tempUserData;
         
         try {
@@ -102,8 +101,15 @@ async function verifyAndCreateAccount() {
                 createdAt: new Date(),
                 role: "monitor_admin"
             });
+
+            await signInWithEmailAndPassword(auth, email, password);
+
+            // --- השורה החסרה כאן! ---
+            sessionStorage.setItem('otp_verified', 'true'); 
+            // -----------------------
+
             alert("החשבון נוצר בהצלחה!");
-            window.location.href = "../login/login.html"; 
+            window.location.href = "../index.html"; 
         } catch (error) {
             alert("שגיאה ב-Firebase: " + error.message);
         }

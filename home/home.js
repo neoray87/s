@@ -67,32 +67,56 @@ function getAvatarColor(letter) {
 let currentUser = null;
 
 onAuthStateChanged(auth, function(user) {
-    currentUser = user; // מעדכנים את המשתנה בכל שינוי מצב
-    
+    // 1. בדיקה מיידית של ה-OTP
+    const otpVerified = sessionStorage.getItem('otp_verified');
+
     if (user) {
-        // ... כל הקוד שלך שמציג את האות והשם (השאר אותו כפי שהוא)
+        if (otpVerified !== 'true') {
+            // המשתמש מחובר לפיירבייס אבל "גנב" את הכניסה בלי OTP
+            console.log("Access Denied: Missing OTP verification");
+            
+            // מנתקים אותו כדי שלא יישאר מחובר בטעות
+            auth.signOut().then(function() {
+                window.location.href = "login/login.html";
+            });
+            return; // עצירה מוחלטת! שום קוד למטה לא ירוץ
+        }
+
+        // 2. אם הגענו לכאן, המשתמש עבר OTP - אפשר להציג את הנתונים
+        currentUser = user;
         getDoc(doc(db, "Users", user.uid)).then(function(userDoc) {
             if (userDoc.exists()) {
                 const userData = userDoc.data();
                 const name = userData.username || "משתמש"; 
                 
-                document.getElementById('visitorIcon').style.display = 'none';
-                const avatarDiv = document.getElementById('userAvatar');
-                avatarDiv.textContent = name.charAt(0).toUpperCase();
-                avatarDiv.style.backgroundColor = getAvatarColor(name.charAt(0));
-                avatarDiv.style.display = 'flex';
-                document.getElementById('welcomeText').textContent = "שלום, " + name;
-                document.getElementById('buttons').style.display = 'none';
+                // עדכון ממשק המשתמש (UI)
+                updateUIForLoggedInUser(name);
             }
         });
+
     } else {
-        // אם התנתקנו - מחזירים את המצב לקדמותו
-        document.getElementById('visitorIcon').style.display = 'block';
-        document.getElementById('userAvatar').style.display = 'none';
-        document.getElementById('welcomeText').textContent = "";
-        document.getElementById('buttons').style.display = 'block';
+        // 3. מצב אורח
+        showGuestUI();
     }
 });
+
+// פונקציות עזר כדי לשמור על קוד נקי
+function updateUIForLoggedInUser(name) {
+    document.getElementById('visitorIcon').style.display = 'none';
+    const avatarDiv = document.getElementById('userAvatar');
+    avatarDiv.textContent = name.charAt(0).toUpperCase();
+    avatarDiv.style.backgroundColor = getAvatarColor(name.charAt(0));
+    avatarDiv.style.display = 'flex';
+    document.getElementById('welcomeText').textContent = "שלום, " + name;
+    if(document.getElementById('buttons')) document.getElementById('buttons').style.display = 'none';
+}
+
+function showGuestUI() {
+    document.getElementById('visitorIcon').style.display = 'block';
+    document.getElementById('userAvatar').style.display = 'none';
+    document.getElementById('welcomeText').textContent = "";
+    if(document.getElementById('buttons')) document.getElementById('buttons').style.display = 'block';
+}
 
 // 2. פונקציית התפריט המתוקנת
 window.toggleMenu = function() {

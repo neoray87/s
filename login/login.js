@@ -1,8 +1,7 @@
 import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-
-
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+let isconnected = false;
 const firebaseConfig = {
     apiKey: "AIzaSyB8IFt-fo2KyTh4f0r9h0tYeu3YnxCiaSQ",
     authDomain: "new-smirat-abrit-db.firebaseapp.com",
@@ -19,32 +18,94 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 
 document.addEventListener('DOMContentLoaded', () => {
-    const btn = document.getElementById('loginButton');
-    if (btn) {
-         document.getElementById('loginButton').addEventListener('click', () => {
-         const emailVal = document.getElementById('username').value; // תשתמש באימייל שרשמת ב-Console
-         const passwordVal = document.getElementById('password').value;
-         handleLogin(emailVal, passwordVal);
-});
+    // 1. כפתור התחברות
+    const loginBtn = document.getElementById('loginButton');
+    if (loginBtn) {
+        loginBtn.addEventListener('click', () => {
+            const emailVal = document.getElementById('username').value;
+            const passwordVal = document.getElementById('password').value;
+            handleLogin(emailVal, passwordVal);
+        });
+    }
+
+    // 2. כפתור אימות קוד (זה מה שהיה חסר!)
+    const verifyBtn = document.getElementById('verifyButton');
+    if (verifyBtn) {
+        verifyBtn.addEventListener('click', () => {
+            window.verifyCodeAndLogin();
+        });
     }
 });
+
 async function handleLogin(email, password) {
     const messagesElement = document.getElementById("messages");
-    
+    if (!email.trim() || !password.trim()) {
+        alert("אנא מלא את כל השדות.");
+        return;
+    }
+
     try {
-        // כאן גוגל מבצעת את הבדיקה (האם קיים? האם הסיסמה נכונה?)
+        // 1. בדיקה ראשונית מול פיירבייס (האם המשתמש והסיסמה נכונים)
+        // שים לב שהוספתי await כדי שנחכה לתשובה מגוגל
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         
-        // אם הגענו לכאן - המשתמש קיים והסיסמה נכונה!
-        const user = userCredential.user;
-        messagesElement.innerText = "התחברת בהצלחה! מזהה: " + user.uid;
-        messagesElement.style.color = "green";
-        window.location.href = "../index.html"; 
+        // 2. אם הגענו לכאן - הפרטים נכונים! נשלח את המייל
+        sendVerificationEmail(email);
+
+        // 3. עכשיו ננתק אותו מיד כדי שלא "יברח" לדף הבית
+        // אנחנו עושים signOut ומנקים את ה-SessionStorage כדי להיות בטוחים
+        await auth.signOut();
+        sessionStorage.removeItem('otp_verified'); 
+        
+        console.log("משתמש אומת ונותק זמנית עד להזנת קוד OTP");
 
     } catch (error) {
-        // אם גוגל לא מצאה את המשתמש או שהסיסמה שגויה, היא תזרוק שגיאה
-        console.error("שגיאה בקוד:", error.code);
+        console.error("שגיאה בכניסה:", error.code);
         messagesElement.innerText = "שם משתמש או סיסמה לא נכונים.";
         messagesElement.style.color = "red";
     }
+}
+
+// פונקציית אימות הקוד צריכה להשתנות מעט! 
+// כי עכשיו המשתמש מנותק, אז צריך לחבר אותו מחדש
+window.verifyCodeAndLogin = async function() {
+    const enteredCode = document.getElementById('otpInput').value;
+    const emailVal = document.getElementById('username').value;
+    const passwordVal = document.getElementById('password').value;
+
+    if (enteredCode === window.generatedCode) {
+        try {
+            // התחברות סופית מחדש
+            await signInWithEmailAndPassword(auth, emailVal, passwordVal);
+            sessionStorage.setItem('otp_verified', 'true'); 
+            
+            alert("קוד תקין! ברוך הבא.");
+            window.location.href = "../index.html"; 
+        } catch (error) {
+            alert("שגיאה בחיבור מחדש: " + error.message);
+        }
+    } else {
+        alert("קוד שגוי, נסה שוב.");
+    }
+};
+
+function sendVerificationEmail(email) {
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    window.generatedCode = otpCode;
+
+    const templateParams = {
+        to_email: email, 
+        passcode: otpCode,
+        time: new Date().toLocaleString('he-IL')
+    };
+
+    emailjs.send("service_f9wbbcs", "template_690f7ew", templateParams)
+    .then(function() {
+        alert("קוד אימות נשלח למייל!");
+        // החלפת התצוגה
+        document.getElementById('otpSection').style.display = 'block';
+        document.getElementById('loginForm').style.display = 'none';
+        document.getElementById('buttons').style.display = 'none'; // להסתיר את כפתור ההתחברות המקורי
+    })
+    .catch(error => alert("שגיאה בשליחה: " + JSON.stringify(error)));
 }
