@@ -2,23 +2,32 @@
 <html>
     <head>
         <meta charset="UTF-8">
+        
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=account_circle" />
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Cardo:ital,wght@0,400;0,700;1,400display=swap" rel="stylesheet">
         <link href="home/home.css" rel="stylesheet" type="text/css">
-        <script src="home/home.js"></script>
+        <script type="module" src="home/home.js"></script>
         <title>שמירת הברית</title>
     </head>
     <body dir="rtl">
-        <div id="features">
-            <a href="profile/profile.html"><i class="material-symbols-outlined">account_circle</i></a>
-            <div id="upButtons">
-                <a class="up" href="">סופר ימים</a>
-                <a class="up" href="">קבלות עצמיות</a>
-                <a class="up" href="">תהילים יומיים</a>
-            </div>
-        </div>
+        
+       <div id="features">
+    <a id="profileLink" href="profile/profile.html" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
+        <i id="visitorIcon" class="material-symbols-outlined">account_circle</i>
+        
+        <div id="userAvatar" class="avatar" style="display: none;"></div>
+        
+        <span id="welcomeText"></span>
+    </a>
+    
+    <div id="upButtons">
+        <a class="up" href="">סופר ימים</a>
+        <a class="up" href="">קבלות עצמיות</a>
+        <a class="up" href="">תהילים יומיים</a>
+    </div>
+</div>
         <h1>אהבת חינם היא הדרך לחיים מלאי שמחה.</h1>
         <p>האתר הזה נוצר כדי לתת לך מקום פשוט ונוח להתחזק באמונה וביהדות, בכל יום ובקצב שלך.
 כאן אפשר לקרוא, להתעמק, ולקבוע לעצמך התחייבויות אישיות, ולעקוב אחרי ההתקדמות שלך לאורך זמן.
