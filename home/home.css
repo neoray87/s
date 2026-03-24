@@ -118,6 +118,9 @@ p{
     justify-content: space-between;
     width: 30%;
 }
+#welcome-message{
+  color :gray;
+}
 .down{
     margin-top: 2%;
     padding: 10px 20px;
