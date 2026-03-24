@@ -64,6 +64,37 @@ p{
     justify-content: space-between;
     width: 75%;
 }
+.dropdown-menu {
+    position: absolute;
+    top: 50px; /* מתחת לאווטאר */
+    right: 0;
+    background-color: rgba(255, 255, 255, 0.9); /* אפקט זכוכית קל */
+    backdrop-filter: blur(5px);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    width: 150px;
+    z-index: 1000;
+    padding: 10px 0;
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 10px 15px;
+    color: #333;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.dropdown-menu a:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.dropdown-menu hr {
+    margin: 5px 0;
+    border: 0;
+    border-top: 1px solid #ddd;
+}
 .up{
     background-color: transparent;
     border: 2px solid transparent;

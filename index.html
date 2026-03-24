@@ -13,15 +13,19 @@
     </head>
     <body dir="rtl">
         
-       <div id="features">
-    <a id="profileLink" href="profile/profile.html" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
-        <i id="visitorIcon" class="material-symbols-outlined">account_circle</i>
-        
-        <div id="userAvatar" class="avatar" style="display: none;"></div>
-        
-        <span id="welcomeText"></span>
-    </a>
-    
+    <div id="features">
+    <div id="profileContainer" style="position: relative;"> <a id="profileLink" href="javascript:void(0)" onclick="toggleMenu()" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
+            <i id="visitorIcon" class="material-symbols-outlined">account_circle</i>
+            <div id="userAvatar" class="avatar" style="display: none;"></div>
+            <span id="welcomeText" style="color: white; font-weight: bold;"></span>
+        </a>
+
+        <div id="userMenu" class="dropdown-menu" style="display: none;">
+            <a href="profile/profile.html">פרופיל אישי</a>
+            <hr>
+            <a href="javascript:void(0)" onclick="handleLogout()">התנתקות</a>
+        </div>
+    </div>
     <div id="upButtons">
         <a class="up" href="">סופר ימים</a>
         <a class="up" href="">קבלות עצמיות</a>

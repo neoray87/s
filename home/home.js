@@ -48,12 +48,14 @@ onAuthStateChanged(auth, async (user) => {
                 // הסתרת כפתורי הרישום/התחברות כי המשתמש כבר מחובר
                 const authButtons = document.getElementById('buttons');
                 if (authButtons) authButtons.style.display = 'none';
+                return true;
             }
         } catch (error) {
             console.error("שגיאה:", error);
         }
     } else {
         console.log("אורח צופה באתר");
+        return false;
     }
 });
 
@@ -62,3 +64,56 @@ function getAvatarColor(letter) {
     const index = letter.charCodeAt(0) % colors.length;
     return colors[index];
 }
+let currentUser = null;
+
+onAuthStateChanged(auth, function(user) {
+    currentUser = user; // מעדכנים את המשתנה בכל שינוי מצב
+    
+    if (user) {
+        // ... כל הקוד שלך שמציג את האות והשם (השאר אותו כפי שהוא)
+        getDoc(doc(db, "Users", user.uid)).then(function(userDoc) {
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
+                const name = userData.username || "משתמש"; 
+                
+                document.getElementById('visitorIcon').style.display = 'none';
+                const avatarDiv = document.getElementById('userAvatar');
+                avatarDiv.textContent = name.charAt(0).toUpperCase();
+                avatarDiv.style.backgroundColor = getAvatarColor(name.charAt(0));
+                avatarDiv.style.display = 'flex';
+                document.getElementById('welcomeText').textContent = "שלום, " + name;
+                document.getElementById('buttons').style.display = 'none';
+            }
+        });
+    } else {
+        // אם התנתקנו - מחזירים את המצב לקדמותו
+        document.getElementById('visitorIcon').style.display = 'block';
+        document.getElementById('userAvatar').style.display = 'none';
+        document.getElementById('welcomeText').textContent = "";
+        document.getElementById('buttons').style.display = 'block';
+    }
+});
+
+// 2. פונקציית התפריט המתוקנת
+window.toggleMenu = function() {
+    // אם אין משתמש מחובר - שלח ללוגין
+    if (!currentUser) {
+        window.location.href = "login/login.html";
+    } else {
+        // אם יש משתמש - פתח/סגור תפריט
+        var menu = document.getElementById('userMenu');
+        if (menu) {
+            menu.style.display = (menu.style.display === 'none' || menu.style.display === '') ? 'block' : 'none';
+        }
+    }
+};
+
+// 3. פונקציית התנתקות (Sign Out)
+window.handleLogout = function() {
+    auth.signOut().then(function() {
+        // אין צורך ב-alert, ה-onAuthStateChanged יטפל בשאר
+        window.location.reload(); 
+    }).catch(function(error) {
+        console.error("שגיאה ביציאה:", error);
+    });
+};
