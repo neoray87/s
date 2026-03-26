@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=account_circle" />
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Cardo:ital,wght@0,400;0,700;1,400display=swap" rel="stylesheet">
+        <link href="home/home.css" rel="stylesheet" type="text/css">
+        <script type="module" src="home/home.js"></script>
+        <title>שמירת הברית</title>
+    </head>
+    <body dir="rtl">
+        
+    <div id="features">
+    <div id="profileContainer" style="position: relative;"> <a id="profileLink" href="javascript:void(0)" onclick="toggleMenu()" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
+            <i id="visitorIcon" class="material-symbols-outlined">account_circle</i>
+            <div id="userAvatar" class="avatar" style="display: none;"></div>
+            <span id="welcomeText" style="color: gray; font-weight: bold;"></span>
+        </a>
+
+        <div id="userMenu" class="dropdown-menu" style="display: none;">
+            <a href="profile/profile.html">פרופיל אישי</a>
+            <hr>
+            <a href="javascript:void(0)" onclick="handleLogout()">התנתקות</a>
+        </div>
+    </div>
+    <div id="upButtons">
+        <a class="up" href="">סופר ימים</a>
+        <a class="up" href="">קבלות עצמיות</a>
+        <a class="up" href="">תהילים יומיים</a>
+    </div>
+    </body>
+</html>
