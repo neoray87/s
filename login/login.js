@@ -103,7 +103,7 @@ function sendVerificationEmail(email) {
     .then(function() {
         alert("קוד אימות נשלח למייל!");
         // החלפת התצוגה
-        document.getElementById('otpSection').style.display = 'block';
+        document.getElementById('otpSection').style.display = 'flex';
         document.getElementById('loginForm').style.display = 'none';
         document.getElementById('buttons').style.display = 'none'; // להסתיר את כפתור ההתחברות המקורי
     })
