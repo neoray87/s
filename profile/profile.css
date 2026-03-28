@@ -1,0 +1,56 @@
+body {
+    font-family: 'Cardo', serif;
+    background-color: #f4f7f6;
+    margin: 0;
+}
+
+.profile-container {
+    max-width: 500px;
+    margin: 40px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    text-align: center;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin: 30px 0;
+}
+
+.stat-card {
+    background: #fdfdfd;
+    padding: 15px 5px;
+    border-radius: 12px;
+    border: 1px solid #eee;
+    transition: transform 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-value {
+    display: block;
+    font-size: 22px;
+    font-weight: bold;
+    color: #3498db;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: #7f8c8d;
+}
+
+.logout-btn {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Cardo';
+}
