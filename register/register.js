@@ -58,6 +58,23 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
                     alert("הסיסמה חייבת להיות לפחות 6 תווים.");
                     return;
                 }
+                try{
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                await setDoc(doc(db, "Users", userCredential.user.uid), {
+                username: displayName,
+                userAge: age,
+                email: email,
+                createdAt: new Date(),
+                role: "monitor_admin"
+                });
+                    await signInWithEmailAndPassword(auth, email, password);
+                    await auth.signOut();
+                }
+                catch(error){
+                    console.error("שגיאה ביצירת המשתמש ב-Firebase:", error);
+                    alert("שגיאה ביצירת המשתמש: " + error.message);
+                    return;
+                }
                 const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
                 window.generatedCode = otpCode;
         
