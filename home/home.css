@@ -196,7 +196,8 @@ p{
 }
 @media (max-width: 768px) {
     *{
-        outline: 1px solid red;
+        
+        margin-bottom: 0.5vh;
     }
     body {
         background-image: url(../photos/backgroundForHome.jpeg);
@@ -209,8 +210,38 @@ p{
         justify-content: center;
         min-height: 100vh;
         margin: 0;
+        gap: 0;
+    }
+    p{
+        width: 80%;
     }
     #features {
         gap: 4vh;
+    }
+    #buttons{
+        flex-direction: column;
+        gap: 2vh;
+        width: 30%;
+    }
+    .down{
+        flex-direction: column;
+        gap: 2vh;
+        font-size: clamp(1rem, 2vw, 1.5rem);
+    }
+    #dedication{
+        flex-direction: column;
+        gap: 0;
+        margin-top: 1.5vh;
+    }
+    #dedication h3{
+        font-size: clamp(1rem, 2vw, 4rem);
+        margin: 0;
+    }
+    #dedication h5{
+        font-size: clamp(0.8rem, 1.5vw, 3rem);
+        margin: 0;
+    }
+    #welcomeText{
+        display: none;
     }
 }
