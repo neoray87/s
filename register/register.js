@@ -16,6 +16,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+        import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         // לוגיקת כפתור הרישום
         document.addEventListener('DOMContentLoaded', () => {
@@ -54,10 +55,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
                     alert("אנא מלא את כל השדות.");
                     return;
                 }
-                if (password.length < 6) {
-                    alert("הסיסמה חייבת להיות לפחות 6 תווים.");
-                    return;
-                }
+
                 try{
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 await setDoc(doc(db, "Users", userCredential.user.uid), {
@@ -103,34 +101,42 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
         console.error(error);
     }
 }
-
+let trys = 0;
 async function verifyAndCreateAccount() {
     const enteredCode = document.getElementById('otpInput').value;
     if (enteredCode === window.generatedCode) {
         const { email, password, displayName, age } = window.tempUserData;
         
         try {
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            await setDoc(doc(db, "Users", userCredential.user.uid), {
-                username: displayName,
-                userAge: age,
-                email: email,
-                createdAt: new Date(),
-                role: "monitor_admin"
-            });
-
             await signInWithEmailAndPassword(auth, email, password);
 
-            // --- השורה החסרה כאן! ---
             sessionStorage.setItem('otp_verified', 'true'); 
-            // -----------------------
 
             alert("החשבון נוצר בהצלחה!");
+            logEvent("USER_REGISTERED", `Email: ${email}`);
             window.location.href = "../index.html"; 
         } catch (error) {
+            logEvent("USER_REGISTRATION_FAILED", `Email: ${email}`);
             alert("שגיאה ב-Firebase: " + error.message);
         }
     } else {
+        trys++;
+        logEvent("USER_REGISTRATION_OTP_INVALID (" + trys + ")", `Email: ${email}`);
         alert("קוד שגוי.");
+    }
+
+}
+async function logEvent(action, details) {
+    try {
+        await addDoc(collection(db, "SystemLogs"), {
+            action: action,       // למשל: "FAILED_LOGIN"
+            details: details,     // למשל: "Email: test@gmail.com"
+            timestamp: serverTimestamp(),
+            // ב-JS של דפדפן קשה להוציא IP אמיתי בלי שירות חיצוני, 
+            // אז נשתמש ב-User Agent כרגע כדי לזהות את המכשיר
+            device: navigator.userAgent.substring(0, 50) 
+        });
+    } catch (e) {
+        console.error("Error logging event: ", e);
     }
 }

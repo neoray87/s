@@ -1,6 +1,8 @@
-import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
 let isconnected = false;
 const firebaseConfig = {
     apiKey: "AIzaSyB8IFt-fo2KyTh4f0r9h0tYeu3YnxCiaSQ",
@@ -13,9 +15,57 @@ const firebaseConfig = {
     measurementId: "G-TTE31QX35E"
 };
 
-const app = initializeApp(firebaseConfig);
+const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
+
+// 3. הגדרת פונקציית הלוג (חייבת להיות כאן!)
+async function logEvent(action, details) {
+    try {
+        await addDoc(collection(db, "SystemLogs"), {
+            action: action,
+            details: details,
+            timestamp: serverTimestamp(),
+            device: navigator.userAgent.substring(0, 50) 
+        });
+        console.log("Log sent: " + action);
+    } catch (e) {
+        console.error("Error logging: ", e);
+    }
+}
+onSnapshot(doc(db, "Settings", "GlobalConfig"), (docSnapshot) => {
+    if (docSnapshot.exists()) {
+        const isLocked = docSnapshot.data().isSystemLocked;
+        let lockOverlay = document.getElementById("systemLockOverlay");
+
+        if (isLocked) {
+            if (!lockOverlay) {
+                lockOverlay = document.createElement("div");
+                lockOverlay.id = "systemLockOverlay";
+                lockOverlay.innerHTML = `
+                    <div style="border: 2px solid #ff0000; padding: 40px; background: rgba(20, 0, 0, 0.9); box-shadow: 0 0 30px rgba(255, 0, 0, 0.5); border-radius: 10px;">
+                        <h1 style="font-size: 3rem; margin: 0; text-shadow: 0 0 10px #ff0000;">⚠️ ACCESS DENIED ⚠️</h1>
+                        <p style="font-size: 1.5rem; margin: 20px 0; font-weight: bold; color: #ffcccc;">המערכת ננעלה מרחוק על ידי המנהל.</p>
+                        <p style="font-size: 1.2rem; color: #ffcccc; letter-spacing: 1px;">Security Protocol Active.</p>
+                    </div>`;
+                
+                Object.assign(lockOverlay.style, {
+                    position: "fixed", top: "0", left: "0", width: "100vw", height: "100vh",
+                    backgroundColor: "black", color: "red", display: "flex",
+                    alignItems: "center", justifyContent: "center", textAlign: "center",
+                    fontFamily: "monospace", zIndex: "999999", overflow: "hidden"
+                });
+                
+                document.body.appendChild(lockOverlay);
+                document.body.style.overflow = "hidden";
+            }
+        } else if (lockOverlay) {
+            // כאן הקסם: אם זה לא נעול ויש overlay, פשוט תוריד אותו
+            lockOverlay.remove();
+            document.body.style.overflow = "auto";
+        }
+    }
+});
 
 document.addEventListener('DOMContentLoaded', () => {
     // 1. כפתור התחברות
@@ -38,34 +88,20 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function handleLogin(email, password) {
-    const messagesElement = document.getElementById("messages");
-    if (!email.trim() || !password.trim()) {
-        alert("אנא מלא את כל השדות.");
-        return;
-    }
-
     try {
-        // 1. בדיקה ראשונית מול פיירבייס (האם המשתמש והסיסמה נכונים)
-        // שים לב שהוספתי await כדי שנחכה לתשובה מגוגל
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        await logEvent("USER_LOGIN_ATTEMPT_SUCCESS", `Email: ${email}`); 
         
-        // 2. אם הגענו לכאן - הפרטים נכונים! נשלח את המייל
         sendVerificationEmail(email);
-
-        // 3. עכשיו ננתק אותו מיד כדי שלא "יברח" לדף הבית
-        // אנחנו עושים signOut ומנקים את ה-SessionStorage כדי להיות בטוחים
-        await auth.signOut();
-        sessionStorage.removeItem('otp_verified'); 
-        
-        console.log("משתמש אומת ונותק זמנית עד להזנת קוד OTP");
-
+        await auth.signOut(); 
+        console.log("משתמש אומת ונותק זמנית");
     } catch (error) {
-        console.error("שגיאה בכניסה:", error.code);
-        messagesElement.innerText = "שם משתמש או סיסמה לא נכונים.";
-        messagesElement.style.color = "red";
+        // שליחת לוג על כישלון
+        await logEvent("USER_LOGIN_FAILED", `Email: ${email} | Error: ${error.code}`);
+        document.getElementById("messages").innerText = "פרטים שגויים.";
     }
 }
-
+let trys = 0;
 // פונקציית אימות הקוד צריכה להשתנות מעט! 
 // כי עכשיו המשתמש מנותק, אז צריך לחבר אותו מחדש
 window.verifyCodeAndLogin = async function() {
@@ -80,12 +116,16 @@ window.verifyCodeAndLogin = async function() {
             sessionStorage.setItem('otp_verified', 'true'); 
             
             alert("קוד תקין! ברוך הבא.");
+            await logEvent("USER_LOGIN_SUCCESS", `Email: ${emailVal}`);
             window.location.href = "../index.html"; 
         } catch (error) {
             alert("שגיאה בחיבור מחדש: " + error.message);
+            logEvent("USER_LOGIN_FAILED ", `Email: ${emailVal}`);
         }
     } else {
+        trys++;
         alert("קוד שגוי, נסה שוב.");
+        logEvent("USER_LOGIN_OTP_INVALID (" + trys + ")", `Email: ${emailVal}`);
     }
 };
 

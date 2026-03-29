@@ -1,5 +1,6 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+// 1. אימפורטים מאוחדים - פעם אחת בלבד!
+import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore, doc, getDoc, collection, addDoc, serverTimestamp, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -13,10 +14,94 @@ const firebaseConfig = {
     measurementId: "G-TTE31QX35E"
 };
 
-const app = initializeApp(firebaseConfig);
+// 2. אתחול
+const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 let currentUser = null;
+
+// 3. פונקציית לוג
+async function logEvent(action, details) {
+    try {
+        await addDoc(collection(db, "SystemLogs"), {
+            action: action,
+            details: details,
+            timestamp: serverTimestamp(),
+            device: navigator.userAgent.substring(0, 50) 
+        });
+    } catch (e) {
+        console.error("Error logging: ", e);
+    }
+}
+
+onSnapshot(doc(db, "Settings", "GlobalConfig"), (docSnapshot) => {
+    if (docSnapshot.exists()) {
+        const isLocked = docSnapshot.data().isSystemLocked;
+        let lockOverlay = document.getElementById("systemLockOverlay");
+
+        if (isLocked) {
+            if (!lockOverlay) {
+                lockOverlay = document.createElement("div");
+                lockOverlay.id = "systemLockOverlay";
+                lockOverlay.innerHTML = `
+                    <div style="border: 2px solid #ff0000; padding: 40px; background: rgba(20, 0, 0, 0.9); box-shadow: 0 0 30px rgba(255, 0, 0, 0.5); border-radius: 10px;">
+                        <h1 style="font-size: 3rem; margin: 0; text-shadow: 0 0 10px #ff0000;">⚠️ ACCESS DENIED ⚠️</h1>
+                        <p style="font-size: 1.5rem; margin: 20px 0; font-weight: bold; color: #ffcccc;">המערכת ננעלה מרחוק על ידי המנהל.</p>
+                        <p style="font-size: 1.2rem; color: #ffcccc; letter-spacing: 1px;">Security Protocol Active.</p>
+                    </div>`;
+                
+                Object.assign(lockOverlay.style, {
+                    position: "fixed", top: "0", left: "0", width: "100vw", height: "100vh",
+                    backgroundColor: "black", color: "red", display: "flex",
+                    alignItems: "center", justifyContent: "center", textAlign: "center",
+                    fontFamily: "monospace", zIndex: "999999", overflow: "hidden"
+                });
+                
+                document.body.appendChild(lockOverlay);
+                document.body.style.overflow = "hidden";
+            }
+        } else if (lockOverlay) {
+            // כאן הקסם: אם זה לא נעול ויש overlay, פשוט תוריד אותו
+            lockOverlay.remove();
+            document.body.style.overflow = "auto";
+        }
+    }
+});
+
+// 5. ניהול משתמש ו-UI
+onAuthStateChanged(auth, async (user) => {
+    const otpVerified = sessionStorage.getItem('otp_verified');
+    if (user) {
+        if (otpVerified !== 'true') {
+            handleLogout();
+            return;
+        }
+        currentUser = user;
+        const userDoc = await getDoc(doc(db, "Users", user.uid));
+        if (userDoc.exists()) {
+            updateUIForLoggedInUser(userDoc.data().username || "משתמש");
+        }
+    } else {
+        showGuestUI();
+    }
+});
+
+// 6. חשיפה ל-window (כדי שה-onclick ב-HTML יעבוד)
+window.toggleMenu = function() {
+    if (!currentUser) {
+        window.location.href = "login/login.html";
+    } else {
+        const menu = document.getElementById('userMenu');
+        if (menu) menu.style.display = (menu.style.display === 'none') ? 'block' : 'none';
+    }
+};
+
+window.handleLogout = function() {
+    signOut(auth).then(() => {
+        sessionStorage.removeItem('otp_verified');
+        window.location.reload(); 
+    });
+};
 
 // מאזין יחיד ומאוחד
 onAuthStateChanged(auth, async (user) => {
@@ -27,6 +112,7 @@ onAuthStateChanged(auth, async (user) => {
         if (otpVerified !== 'true') {
             console.log("גישה נדחתה: חסר אימות OTP");
             handleLogout();
+            logEvent("SECURITY_BYPASS_ATTEMPT", "User tried to access index without OTP");
             return;
         }
 
@@ -89,19 +175,6 @@ function getAvatarColor(letter) {
     const index = letter.charCodeAt(0) % colors.length;
     return colors[index];
 }
-
-// חשיפה ל-window עבור ה-HTML
-window.toggleMenu = function() {
-    if (!currentUser) {
-        window.location.href = "login/login.html";
-    } else {
-        const menu = document.getElementById('userMenu');
-        if (menu) {
-            menu.style.display = (menu.style.display === 'none' || menu.style.display === '') ? 'block' : 'none';
-        }
-    }
-};
-
 window.handleLogout = function() {
     signOut(auth).then(() => {
         localStorage.removeItem('currentUser');
