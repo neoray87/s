@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=account_circle" />
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Cardo:ital,wght@0,400;0,700;1,400display=swap" rel="stylesheet">
+        <link href="profile.css" rel="stylesheet" type="text/css">
+        <script type="module" src="profile.js"></script>
+        <title>שמירת הברית</title>
+    </head>
+    <body dir="rtl">
+        <div class="profile-container">
+    <section class="profile-header">
+        <div class="avatar-large">
+             <i class="material-symbols-outlined" style="font-size: 80px;">account_circle</i>
+        </div>
+        <h2 id="displayUserName">שלום, [שם המשתמש]</h2>
+        <p class="join-date">חבר בקהילה מזה 30 ימים</p>
+    </section>
+
+    <hr>
+
+    <section class="stats-grid">
+        <div class="stat-card">
+            <span class="stat-value">14</span>
+            <span class="stat-label">ימים ברצף</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-value">120</span>
+            <span class="stat-label">פרקי תהילים</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-value">5</span>
+            <span class="stat-label">קבלות פעילות</span>
+        </div>
+    </section>
+
+    <section class="profile-actions">
+        <button class="edit-btn">עריכת פרטים</button>
+        <button class="logout-btn" onclick="handleLogout()">התנתקות מהמערכת</button>
+    </section>
+</div>
+    </body>
+</html>
