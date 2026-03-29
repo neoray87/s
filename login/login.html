@@ -3,7 +3,7 @@
     <head>
     <meta charset="UTF-8">
     <title>התחבר</title>
-    
+
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
     <script type="text/javascript">
@@ -11,32 +11,30 @@
             emailjs.init("ijeFjWw14JbQsnH2x"); 
         })();
     </script>   
-    
+
     <link rel="stylesheet" href="login.css" type="text/css">
-    
+
     <script type="module" src="login.js"></script>
 </head>
     <body>
         <div id="main">
-        <div id="loginForm">
-            <h1>ברוכים הבאים</h1>
-            <p>אנא התחבר לחשבון שלך</p>
-            <input type="email" id="username" placeholder="כתובת דואל">
-            <input type="password" id="password" placeholder="סיסמה">
-            <p id="messages"></p>
-        </div>
+            <div id="loginForm">
+                <h1>ברוכים הבאים</h1>
+                <p>אנא התחבר לחשבון שלך</p>
+                <input type="email" id="username" placeholder="כתובת דואל">
+                <input type="password" id="password" placeholder="סיסמה">
+                <p id="messages"></p>
+            </div>
 
-        <div id="otpSection" style="display: none;">
-            <input type="text" id="otpInput" placeholder="הכנס את הקוד מהמייל">
-            <button id="verifyButton">אמת קוד והתחבר</button>
-        </div>
+            <div id="otpSection" style="display: none;">
+                <input type="text" id="otpInput" placeholder="הכנס את הקוד מהמייל">
+                <button id="verifyButton">אמת קוד והתחבר</button>
+            </div>
 
-        <div id="buttons">
-            <button id="loginButton">התחבר</button> 
-            <br>
-            <a href="../register/registre.html">אין לך חשבון? הרשם/מי</a>
-        </div>
-    </div>
+            <div id="buttons">
+                <button id="loginButton">התחבר</button>
+                <br>
+                <a href="../register/registre.html">אין לך חשבון? הרשם/מי</a>
             </div>
         </div>
     </body>
