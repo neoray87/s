@@ -131,4 +131,7 @@ a:hover{
         width: 80%;
         height: 50%;
     }
+    #verifyButton{
+        font-size: clamp(0.75rem, 1.5vw, 1rem);
+    }
 }

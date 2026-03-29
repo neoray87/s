@@ -215,8 +215,13 @@ p{
     p{
         width: 80%;
     }
+    #profileContainer{
+        margin: 0;
+    }
     #features {
-        gap: 4vh;
+        gap: 3vh;
+        width: 80%;
+        margin: 0;
     }
     #buttons{
         flex-direction: column;
