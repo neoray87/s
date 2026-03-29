@@ -125,7 +125,12 @@ a:hover{
 @media (max-width: 768px) {
     *{
         margin: 0;
-        
+    }
+    body{
+        background-image: url(../photos/backgroundForHome.jpeg);
+        background-size: cover;
+        background-position: 52% 50%;
+        background-repeat: no-repeat;
     }
     #main{
         width: 80%;
