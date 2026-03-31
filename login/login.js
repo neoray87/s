@@ -98,7 +98,6 @@ async function handleLogin(email, password) {
         document.getElementById("messages").innerText = "מתחבר...";
         document.getElementById("messages").style.color = "white";
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        await logEvent("USER_LOGIN_ATTEMPT_SUCCESS", `Email: ${email}`, 1); 
         
         sendVerificationEmail(email);
         await auth.signOut(); 
@@ -108,7 +107,7 @@ async function handleLogin(email, password) {
     } catch (error) {
         trying++;
         if (trying >= 5) {
-            await logEvent("SUSPICIOUS_LOGIN_BRUTEFORCE", `Email: ${email} | Attempts: ${trying}`, 3); // אדום קריטי
+            await logEvent("SUSPICIOUS_LOGIN_BRUTEFORCE", `Email: ${email} | Attempts: ${trying}`, 2); 
             document.getElementById("messages").innerText = "יותר מידי ניסיונות, נסה שוב מאוחר יותר.";
             document.getElementById("messages").style.color = "red";
             const blockUntil = Date.now() + (2 * 60 * 1000); // זמן עכשיו + 2 דקות במילי-שניות
@@ -168,15 +167,14 @@ function sendVerificationEmail(email) {
 
     emailjs.send("service_f9wbbcs", "template_690f7ew", templateParams)
     .then(function() {
-        alert("קוד אימות נשלח למייל!");
-        logEvent("OTP_SENT_SUCCESS", `Email: ${email}`, 1); // לוג ירוק - הצלחה
+       document.getElementById("messages").innerText = "קוד אימות נשלח למייל!";
         
         document.getElementById('otpSection').style.display = 'flex';
         document.getElementById('loginForm').style.display = 'none';
         if(document.getElementById('buttons')) document.getElementById('buttons').style.display = 'none';
     })
     .catch(error => {
-        alert("שגיאה בשליחה: " + JSON.stringify(error));
+        document.getElementById("messages").innerText = "שגיאה בשליחה: " + JSON.stringify(error);
         logEvent("OTP_SENT_FAILED", `Email: ${email} | Error: ${error}`, 3); // לוג אדום - רק בכישלון
     });
 }
