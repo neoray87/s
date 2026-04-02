@@ -56,12 +56,12 @@ h1{
     font-family: "Cardo", serif;
     font-weight: 700;
     font-style: normal;
-    font-size: clamp(3rem, 8vw, 6rem);
+    font-size: clamp(3rem, 3vw, 6rem);
     color: var(--title-color);
 }
 p{
     font-weight: 400;
-    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    font-size: clamp(1.5rem, 1.5vw, 2.5rem);
     color: var(--text-color);
     width: 50%;
     background-color: rgba(255, 236, 212, 0.4);
@@ -146,7 +146,7 @@ p{
     text-decoration: none;
     font-weight: 600;
     font-style: normal;
-    font-size: clamp(2rem, 4vw, 2.5rem);
+    font-size: clamp(2rem, 1.5vw, 2.5rem);
 }
 #register-button{
     border: 2px solid transparent;
