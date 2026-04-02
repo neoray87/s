@@ -20,6 +20,7 @@ function updateProfileUI(name) {
     const welcomeText = document.getElementById('displayUserName');
     const avatarDiv = document.querySelector('.avatar-large');
 
+
     if (welcomeText) {
         welcomeText.textContent = `שלום, ${name}`;
     }
@@ -34,8 +35,8 @@ function updateProfileUI(name) {
         avatarDiv.style.alignItems = 'center';
         avatarDiv.style.justifyContent = 'center';
         avatarDiv.style.borderRadius = '50%';
-        avatarDiv.style.width = '100px';
-        avatarDiv.style.height = '100px';
+        avatarDiv.style.width = '50%w';
+        avatarDiv.style.height = '50%w';
         avatarDiv.style.margin = '0 auto';
         avatarDiv.style.fontSize = '40px';
         avatarDiv.style.fontWeight = 'bold';
