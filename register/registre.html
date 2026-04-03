@@ -1,31 +1,33 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta charset="UTF-8"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <script type="text/javascript">
-        (function() {
-            emailjs.init("ijeFjWw14JbQsnH2x"); 
-        })();
-    </script>       
-    <script type="module" src="register.js"></script>
-    <title>הרשמה</title>
+        <meta charset="UTF-8">
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+        <link rel="stylesheet" href="register.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script type="text/javascript">
+            (function() {
+                emailjs.init("ijeFjWw14JbQsnH2x"); 
+            })();
+        </script>       
+        <script type="module" src="register.js"></script>
+        <title>הרשמה</title>
     </head>
     <body>
-    <div id="registrationForm">
-        <h1>ברוכים הבאים</h1>
-        <p>אנא מלא את הפרטים הבאים כדי ליצור חשבון:</p>
-        <input type="text" id="username" placeholder="שם משתמש"><br>
-        <input type="password" id="password" placeholder="סיסמה"><br>
-        <input type="text" id="displayName" placeholder="שם תצוגה"><br>
-        <input type="number" id="age" placeholder="גיל"><br>
-        <button id="loginButton">הירשם</button>
-    </div>
-    <div id="otpSection" style="display: none;">
-    <input type="text" id="otpInput" placeholder="הכנס את הקוד מהמייל">
-    <button id="verifyButton">אמת קוד וסיים רישום</button>
-
-    </div>
-        <p id="messages"></p>
-        <a href="../login/login.html">יש לך חשבון? התחבר</a>
+        <div id="registrationForm">
+            <h1>ברוכים הבאים</h1>
+            <p>אנא מלא את הפרטים הבאים כדי ליצור חשבון:</p>
+            <input type="text" id="username" placeholder="שם משתמש"><br>
+            <input type="password" id="password" placeholder="סיסמה"><br>
+            <input type="text" id="displayName" placeholder="שם תצוגה"><br>
+            <input type="number" id="age" placeholder="גיל"><br>
+            <button id="loginButton">הירשם</button>
+            <p id="messages"></p>
+            <a href="../login/login.html">יש לך חשבון? התחבר</a>
+        </div>
+        <div id="otpSection" style="display: none;">
+            <input type="text" id="otpInput" placeholder="הכנס את הקוד מהמייל">
+            <button id="verifyButton">אמת קוד וסיים רישום</button>
+        </div>
     </body>
 </html>

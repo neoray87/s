@@ -1,0 +1,77 @@
+:root{
+    --title-color: #5c666b;
+    --text-color: #71604B;
+    --button-color: #807F7C;
+    --background-color: #fff4e766;
+    --border-color: #ffecd4b3;
+}
+*{
+    margin: 0;
+}
+body{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-image: url(../photos/backgroundForHome.jpeg);
+    background-size: cover;
+    font-family: Arial, sans-serif;
+}
+#registrationForm{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 25%;
+    height: 65%;
+    background-color: var(--background-color);
+    backdrop-filter: blur(5px);
+    border: solid 2px var(--border-color);
+    border-radius: 7%;
+}
+h1{
+    font-family: 'Cardo', serif;
+    font-weight: 700;
+    font-style: normal;
+    font-size: clamp(3rem, 3vw, 6rem);
+    color: var(--title-color);
+    text-align: center;
+    margin: 0;
+}
+p{
+    font-weight: 400;
+    font-size: clamp(1.5rem, 2vw, 2.5rem);
+    color: var(--text-color);
+    width: 80%;
+    text-align: center;
+    margin-bottom: 10%;
+}
+input{
+    width: 80%;
+    height: 5%;
+    padding: 10px;
+    margin: 10px 0;
+    border: solid 2px var(--button-color);
+    border-radius: 5% / 40%;
+    font-size: 1rem;
+}
+#loginButton{
+    width: 80%;
+    height: 5%;
+    background-color: var(--button-color);
+    color: white;
+    border: none;
+    border-radius: 3% / 35%;
+    font-size: 1rem;
+    cursor: pointer;
+}
+#loginButton:hover{
+    background-color: var(--border-color);
+}
+a{
+    color: var(--text-color);
+    text-decoration: none;
+    font-size: 1rem;
+}
