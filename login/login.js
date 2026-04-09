@@ -146,13 +146,13 @@ window.verifyCodeAndLogin = async function() {
         else {
         trys++;
         if (trys >= 3) {
-            document.getElementById("messagesas").style.color = "red";
-            document.getElementById("messagesas").innerText = "יותר מדי ניסיונות! האירוע דווח למנהל.";
+            document.getElementById("messages").style.color = "red";
+            document.getElementById("messages").innerText = "יותר מדי ניסיונות! האירוע דווח למנהל.";
             if (trys === 5) {
             logEvent("SUSPICIOUS_OTP_BRUTEFORCE", `Email: ${emailVal} | Attempts: ${trys}`, 3); }// אדום קריטי
         } else {
-            document.getElementById("messagesas").style.color = "red";
-            document.getElementById("messagesas").innerText = "קוד שגוי, נסה שוב.";       
+            document.getElementById("messages").style.color = "red";
+            document.getElementById("messages").innerText = "קוד שגוי, נסה שוב.";       
         }
 }};
 function sendVerificationEmail(email) {
