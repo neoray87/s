@@ -19,7 +19,6 @@ const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 let currentUser = null;
-
 // 3. פונקציית לוג
 async function logEvent(action, details) {
     try {

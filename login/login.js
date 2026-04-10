@@ -18,6 +18,7 @@ const firebaseConfig = {
 const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
+let _internalOtpCode = null;
 
 // 3. הגדרת פונקציית הלוג (חייבת להיות כאן!)
 async function logEvent(action, details, severity = 1) { // ברירת מחדל ירוק
@@ -102,10 +103,9 @@ async function handleLogin(email, password) {
         sendVerificationEmail(email);
         await auth.signOut(); 
         console.log("משתמש אומת ונותק זמנית");
-        loginAttempts = 0;
         localStorage.removeItem("lockout_until");
     } catch (error) {
-        trying++;
+        
         if (trying >= 5) {
             await logEvent("SUSPICIOUS_LOGIN_BRUTEFORCE", `Email: ${email} | Attempts: ${trying}`, 2); 
             document.getElementById("messages").innerText = "יותר מידי ניסיונות, נסה שוב מאוחר יותר.";
@@ -113,14 +113,22 @@ async function handleLogin(email, password) {
             const blockUntil = Date.now() + (2 * 60 * 1000); // זמן עכשיו + 2 דקות במילי-שניות
             localStorage.setItem("lockout_until", blockUntil.toString());
         }
+        if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found')
+        {
+            document.getElementById("messages").innerText = "אימייל או סיסמה שגויים.";
+            trying++;
+        } 
+        else
+        {
         const msgElement = document.getElementById("messages");
-        msgElement.innerText = "שם המשתמש או הסיסמה שגויים.";
+        msgElement.innerText = "שגיאה בהתחברות: " + error.message;
         msgElement.style.color = "red";
         setTimeout(() => { 
-             msgElement.innerText = "";
-                msgElement.style.color = "white";
+            msgElement.innerText = "";
+            msgElement.style.color = "white";
         }, 2000);
     }
+}
 }
 let trys = 0;
 // פונקציית אימות הקוד צריכה להשתנות מעט! 
@@ -130,7 +138,7 @@ window.verifyCodeAndLogin = async function() {
     const emailVal = document.getElementById('username').value;
     const passwordVal = document.getElementById('password').value;
 
-        if (enteredCode === window.generatedCode) {
+        if (btoa(enteredCode) === _internalOtpCode) {
         try {
             // התחברות סופית מחדש
             await signInWithEmailAndPassword(auth, emailVal, passwordVal);
@@ -148,7 +156,7 @@ window.verifyCodeAndLogin = async function() {
         if (trys >= 3) {
             document.getElementById("messages").style.color = "red";
             document.getElementById("messages").innerText = "יותר מדי ניסיונות! האירוע דווח למנהל.";
-            if (trys === 5) {
+            if (trys  >= 5) {
             logEvent("SUSPICIOUS_OTP_BRUTEFORCE", `Email: ${emailVal} | Attempts: ${trys}`, 3); }// אדום קריטי
         } else {
             document.getElementById("messages").style.color = "red";
@@ -157,7 +165,7 @@ window.verifyCodeAndLogin = async function() {
 }};
 function sendVerificationEmail(email) {
     const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-    window.generatedCode = otpCode;
+    let _encodedOtp = btoa(otpCode);
 
     const templateParams = {
         to_email: email, 
