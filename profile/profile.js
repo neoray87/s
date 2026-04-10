@@ -15,6 +15,20 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+async function logEvent(action, details, severity = 1) { // ברירת מחדל ירוק
+    try {
+        await addDoc(collection(db, "SystemLogs"), {
+            action: action,
+            details: details,
+            severity: severity, // השדה החדש שלנו
+            timestamp: serverTimestamp(),
+            device: navigator.userAgent.substring(0, 50) ,
+            IP: await getUserIP() // פונקציה חדשה לקבלת ה-IP
+        });
+    } catch (e){
+        
+    } }
+
 
 function updateProfileUI(name) {
     const welcomeText = document.getElementById('displayUserName');
@@ -59,6 +73,8 @@ onAuthStateChanged(auth, (user) => {
             updateProfileUI(savedUser.username);
         }
     } else {
+        logEvent("USER_TRYED_SKIPLOGIN", "user enterd manaly the url to try skip login", 3);
+        alert("אנא התחבר כדי לגשת לפרופיל.");
         window.location.href = "../index.html"; 
     }
 });

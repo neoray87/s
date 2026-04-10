@@ -20,7 +20,6 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 let _internalOtpCode = null;
 
-// 3. הגדרת פונקציית הלוג (חייבת להיות כאן!)
 async function logEvent(action, details, severity = 1) { // ברירת מחדל ירוק
     try {
         await addDoc(collection(db, "SystemLogs"), {
@@ -165,16 +164,18 @@ window.verifyCodeAndLogin = async function() {
 }};
 function sendVerificationEmail(email) {
     const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-    let _encodedOtp = btoa(otpCode);
+    
 
     const templateParams = {
         to_email: email, 
         passcode: otpCode,
         time: new Date().toLocaleString('he-IL')
     };
-
+    _internalOtpCode = btoa(otpCode);
+         
     emailjs.send("service_f9wbbcs", "template_690f7ew", templateParams)
     .then(function() {
+       
        document.getElementById("messages").innerText = "קוד אימות נשלח למייל!";
         
         document.getElementById('otpSection').style.display = 'flex';
