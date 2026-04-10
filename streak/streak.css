@@ -1,0 +1,151 @@
+:root{
+    --title-color: #5c666b;
+    --text-color: #71604B;
+    --button-color: #807F7C;
+    --background-color: #fff4e766;
+    --border-color: #ffecd4b3;
+}
+body{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-image: url(../photos/backgroundForHome.jpeg);
+    background-size: cover;
+    font-family: Arial, sans-serif;
+}
+#main{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 25%;
+    height: 55%;
+    background-color: var(--background-color);
+    backdrop-filter: blur(5px);
+    border: solid 2px var(--border-color);
+    border-radius: 7%;
+}
+h1{
+    font-family: 'Cardo', serif;
+    font-weight: 700;
+    font-style: normal;
+    font-size: clamp(3rem, 3vw, 6rem);
+    color: var(--title-color);
+    text-align: center;
+    margin: 0;
+}
+p{
+    font-weight: 400;
+    font-size: clamp(1.5rem, 2vw, 2.5rem);
+    color: var(--text-color);
+    width: 80%;
+    text-align: center;
+    margin-bottom: 10%;
+}
+input{
+    width: 80%;
+    height: 5%;
+    padding: 10px;
+    margin: 10px 0;
+    border: solid 2px var(--button-color);
+    border-radius: 3% / 35%;
+    font-size: 1rem;
+}
+#buttons{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 80%;
+    margin-top: 10%;
+}
+#loginForm{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    
+}
+#streak-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 60%;
+    height: 30%;
+}
+#verifyButton{
+    background-color: transparent;
+    border: 2px solid var(--title-color);
+    color: var(--title-color);
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: clamp(0.7rem, 1.3vw, 0.85rem);
+    cursor: pointer;
+    height: 25%;
+}
+#verifyButton:hover{
+    transition: all 0.3s ease;
+    box-shadow: 0 0 25px 3px #8b9aa1;
+    background-color: var(--title-color);
+    color: white;
+}
+#loginButton{
+    background-color: transparent;
+    border: 2px solid var(--title-color);
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: clamp(1rem, 2vw, 1.5rem);
+    cursor: pointer;
+    height: 100%;
+}
+#loginButton:hover{
+    transition: all 0.3s ease;
+    box-shadow: 0 0 25px 3px #8b9aa1;
+    background-color: var(--title-color);
+}
+a{
+    color: white;
+    text-decoration: none;
+    font-size: clamp(0.8rem, 1.5vw, 1.2rem);
+    transition: transform 0.3s ease;
+}
+#createStreakBtn{
+    display: none;
+}
+a:hover{
+    text-decoration: underline;
+    transform: scale(1.1);
+    transition: transform 0.3s ease;
+}
+#messages{
+    font-size: clamp(0.8rem, 1.5vw, 1.2rem);
+    color: red;
+    margin: 0;
+}
+@media (max-width: 768px) {
+    *{
+        margin: 0;
+    }
+    body{
+        background-image: url(../photos/backgroundForHome.jpeg);
+        background-size: cover;
+        background-position: 52% 50%;
+        background-repeat: no-repeat;
+    }
+    #main{
+        width: 80%;
+        height: 50%;
+    }
+    #verifyButton{
+        font-size: clamp(0.75rem, 1.5vw, 1rem);
+    }
+}

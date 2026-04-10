@@ -139,6 +139,12 @@ window.verifyCodeAndLogin = async function() {
 
         if (btoa(enteredCode) === _internalOtpCode) {
         try {
+               const limit = 5 * 60 * 1000; // 5 דקות
+               const now = Date.now();
+               let vaild = (now - creationTime) > limit;
+            if (vaild) {
+            alert("הקוד פג תוקף, בקש קוד חדש.");
+            return;}
             // התחברות סופית מחדש
             await signInWithEmailAndPassword(auth, emailVal, passwordVal);
             sessionStorage.setItem('otp_verified', 'true'); 
