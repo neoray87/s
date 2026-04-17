@@ -2,23 +2,26 @@
 <html>
     <head>
         <meta charset="UTF-8">
-      <link rel="stylesheet" href="streak.css" type="text/css">
+        <link rel="stylesheet" href="streak.css" type="text/css">
         <script type="module" src="streak.js"></script>
         <title>ספירת ימים</title>
     </head>
     <body dir="rtl">
-<div class="streak-container">
-    <h1>התחלת רצף חדש</h1>
-    <img src="" alt="plus icon" id="plus-icon"><br>
-    <button onclick="incrementBtn()" id="incrementBtn">התחל רצף</button>
-</div>
+        <div class="streak-container">
+            <h1>התחלת רצף חדש</h1>
+            <img src="plus-icon.png" alt="plus icon" id="plus-icon"><br>
+            <button onclick="incrementBtn()" id="incrementBtn">התחל רצף</button>
+        </div>
 
-<div id="createStreakBtn" style="display: none; flex-direction: column; align-items: center;">
-    <h1>פרטי הרצף החדש</h1>
-    <input id="streakName" type="text" placeholder="שם הרצף">
-    <input id="streakDescription" type="text" placeholder="תיאור הרצף">
-    <br>
-    <button onclick="createStreak()" id="createStreak">צור רצף עכשיו</button>
-</div>
+        <div id="createStreakBtn" style="display: none; flex-direction: column; align-items: center;">
+            <h1>פרטי הרצף החדש</h1>
+            <input id="streakName" type="text" placeholder="שם הרצף">
+            <input id="streakDescription" type="text" placeholder="תיאור הרצף">
+            <br>
+            <button onclick="createStreak()" id="createStreak">צור רצף עכשיו</button>
+        </div>
+
+        <div id="streakContainer"></div>
+
     </body>
 </html>

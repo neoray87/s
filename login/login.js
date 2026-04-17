@@ -19,6 +19,7 @@ const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 let _internalOtpCode = null;
+let timev = Date.now();
 
 async function logEvent(action, details, severity = 1) { // ברירת מחדל ירוק
     try {
@@ -139,9 +140,9 @@ window.verifyCodeAndLogin = async function() {
 
         if (btoa(enteredCode) === _internalOtpCode) {
         try {
-               const limit = 5 * 60 * 1000; // 5 דקות
+               const limit = 15 * 60 * 1000; // 5 דקות
                const now = Date.now();
-               let vaild = (now - creationTime) > limit;
+               let vaild = (now - timev) > limit;
             if (vaild) {
             alert("הקוד פג תוקף, בקש קוד חדש.");
             return;}
@@ -168,14 +169,15 @@ window.verifyCodeAndLogin = async function() {
             document.getElementById("messages").innerText = "קוד שגוי, נסה שוב.";       
         }
 }};
+
 function sendVerificationEmail(email) {
     const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-    
+    timev = Date.now();
 
     const templateParams = {
         to_email: email, 
         passcode: otpCode,
-        time: new Date().toLocaleString('he-IL')
+        time: new Date(timev).toLocaleString('he-IL')
     };
     _internalOtpCode = btoa(otpCode);
          

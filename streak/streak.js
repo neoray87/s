@@ -1,6 +1,6 @@
 // 1. אימפורטים מאוחדים
 import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, doc, getDoc, collection, updateDoc, addDoc, serverTimestamp, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc,getDocs, collection, updateDoc, addDoc, serverTimestamp, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -66,32 +66,39 @@ onSnapshot(doc(db, "Settings", "GlobalConfig"), (docSnapshot) => {
 });
 
 // 5. ניהול מצב משתמש (Auth Observer)
+let isUpdating = false; // דגל למניעת לולאה אינסופית
+
 onAuthStateChanged(auth, async (user) => {
     const otpVerified = sessionStorage.getItem('otp_verified');
 
     if (user) {
         if (otpVerified !== 'true') {
-            console.warn("Security Breach: Missing OTP verification");
             handleLogout();
             return;
         }
 
         currentUser = user;
+        
+        // הגנה: אם אנחנו כבר בתהליך עדכון, אל תריץ שוב
+        if (isUpdating) return; 
+
         try {
             const userDoc = await getDoc(doc(db, "Users", user.uid));
             if (userDoc.exists()) {
                 const name = userDoc.data().username || "משתמש";
-                localStorage.setItem('currentUser', JSON.stringify({
-                    username: name,
-                    uid: user.uid
-                }));
                 updateUIForLoggedInUser(name);
+                
+                isUpdating = true; // סימון שהתחלנו עדכון
+                await loadStreakUI();
+                // מחק את הקריאה ל-updateStreak מכאן אם היא גורמת לרענון!
+                isUpdating = false; 
             }
         } catch (error) {
-            console.error("Error fetching user data:", error);
+            console.error("Error:", error);
+            isUpdating = false;
         }
     } else {
-        showGuestUI();
+        handleLogout();
     }
 });
 
@@ -104,7 +111,7 @@ window.incrementBtn = function() {
 };
 
 window.createStreak = async function() {
-    if (!currentUser) return;
+    if (!currentUser) handleLogout(); return;
 
     const streakName = document.getElementById('streakName').value;
     const streakDescription = document.getElementById('streakDescription').value;
@@ -130,6 +137,135 @@ window.createStreak = async function() {
         console.error("Creation failed:", error);
     }
 };
+async function loadStreakUI() {
+    if (!currentUser) return;
+    
+    const container = document.getElementById("streakContainer");
+    if (!container) return;
+
+    try {
+        const streaksCollection = collection(db, "Users", currentUser.uid, "Streaks");
+        const querySnapshot = await getDocs(streaksCollection);
+
+        container.innerHTML = ""; // ניקוי המסך לפני טעינה מחדש
+
+        if (querySnapshot.empty) {
+            container.innerHTML = "<p>עדיין לא נוצרו רצפים. לחץ על 'התחל רצף' למעלה.</p>";
+            return;
+        }
+
+        querySnapshot.forEach((docSnap) => {
+            const data = docSnap.data();
+            renderStreakWidget(data.name, data.currentCount || 0, docSnap.id);
+        });
+    } catch (error) {
+        console.error("שגיאה בטעינת הרצפים:", error);
+    }
+}
+
+// פונקציה שמייצרת את הדיב לכל רצף בנפרד
+function renderStreakWidget(name, count, streakId) {
+    const container = document.getElementById("streakContainer");
+    
+    const card = document.createElement("div");
+    card.className = "streak-card";
+    // עיצוב בסיסי כדי שנראה שמשהו קורה
+    card.style = "border: 2px solid #ffa500; padding: 15px; border-radius: 12px; margin: 10px 0; background: #fff5e6;";
+    
+    card.innerHTML = `
+        <h3 style="margin: 0;">${name}</h3>
+        <p style="font-size: 1.2rem;">🔥 רצף: <strong>${count}</strong></p>
+        <button onclick="checkIn('${streakId}')" style="cursor:pointer; padding: 5px 10px;">סמן הצלחה</button>
+    `;
+    
+    container.appendChild(card);
+}
+async function checkAndUpdateIndividualStreak(streakId, data) {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    const oneDayInMs = 24 * 60 * 60 * 1000;
+    
+    const lastCheckIn = data.lastCheckInDate ? data.lastCheckInDate : null;
+    const streakRef = doc(db, "Users", currentUser.uid, "Streaks", streakId);
+
+    if (!lastCheckIn) return; // אם מעולם לא לחצו, אין מה לעדכן
+
+    // אם עבר יותר מיום אחד מאז הצ'ק-אין האחרון - איפוס
+    if (today > lastCheckIn + oneDayInMs) {
+        await updateDoc(streakRef, {
+            currentCount: 0 
+        });
+        console.log(`הסטריק "${data.name}" אופס כי עבר זמן.`);
+        loadStreakUI(); // רענון התצוגה
+    }
+}
+
+
+window.checkIn = async function(streakId) {
+    if (!currentUser) return;
+
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    const streakRef = doc(db, "Users", currentUser.uid, "Streaks", streakId);
+    
+    const streakSnap = await getDoc(streakRef);
+    const data = streakSnap.data();
+
+    if (data.lastCheckInDate === today) {
+        alert("כבר סימנת הצלחה לרצף זה היום!");
+        return;
+    }
+
+    const newCount = (data.currentCount || 0) + 1;
+    await updateDoc(streakRef, {
+        currentCount: newCount,
+        lastCheckInDate: today
+    });
+
+    alert(`מעולה! הרצף "${data.name}" עלה ל-${newCount}`);
+    loadStreakUI(); // רענון התצוגה
+};
+async function updateStreak() {
+    const userRef = doc(db, "Users", currentUser.uid);
+    const userSnap = await getDoc(userRef);
+    
+    if (!userSnap.exists()) {
+        handleLogout();
+        return;
+    }
+
+    const data = userSnap.data();
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    
+    // נהפוך את התאריך מה-DB לאובייקט זמן של התחלת היום
+    const lastLogin = data.lastLoginDate ? new Date(data.lastLoginDate) : null;
+    if (!lastLogin) {
+        await updateDoc(userRef, { currentStreak: 1, lastLoginDate: today });
+        return;
+    }
+
+    const lastDate = new Date(lastLogin.getFullYear(), lastLogin.getMonth(), lastLogin.getDate()).getTime();
+    const oneDayInMs = 24 * 60 * 60 * 1000;
+
+    if (today === lastDate) {
+        console.log("כבר ביקרת היום");
+    } else if (today === lastDate + oneDayInMs) {
+        // עבר בדיוק יום אחד - הסטריק גדל!
+        const newStreak = (data.currentStreak || 0) + 1;
+        await updateDoc(userRef, { 
+            currentStreak: newStreak, 
+            lastLoginDate: today,
+            bestStreak: Math.max(newStreak, data.bestStreak || 0)
+        });
+        alert(`כל הכבוד! הסטריק שלך עלה ל-${newStreak}`);
+    } else {
+        // עבר יותר מיום - הסטריק התאפס
+        await updateDoc(userRef, { currentStreak: 1, lastLoginDate: today });
+        alert("אוי! הסטריק התאפס. מתחילים מחדש.");
+    }
+}
+
 
 window.handleLogout = function() {
     signOut(auth).then(() => {

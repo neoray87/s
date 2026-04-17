@@ -48,7 +48,7 @@ function updateProfileUI(name) {
         avatarDiv.style.display = 'flex';
         avatarDiv.style.alignItems = 'center';
         avatarDiv.style.justifyContent = 'center';
-        avatarDiv.style.borderRadius = '50%';
+        avatarDiv.style.borderRadius = '100%';
         avatarDiv.style.width = '50%w';
         avatarDiv.style.height = '50%w';
         avatarDiv.style.margin = '0 auto';
@@ -64,7 +64,24 @@ document.addEventListener('DOMContentLoaded', () => {
         updateProfileUI(savedUser.username);
     }
 });
+async function displayUserDetails() {
+    const savedUser = JSON.parse(localStorage.getItem('currentUser'));
+    const usernamedisplay = document.getElementById('displayUserName');
+    const createdAtDisplay = document.getElementById('join-date');
+    const bestStreakDisplay = document.getElementById('bestStreak');
+    const cablotStatValue = document.getElementById('cablotstat-value');
+    const teilimStatValue = document.getElementById('teilimstat-value');
 
+    if (savedUser) {
+        usernamedisplay.innerText = `שם משתמש: ${savedUser.username}`;
+        createdAtDisplay.innerText = `תאריך יצירה: ${savedUser.createdAt}`;
+        bestStreakDisplay.innerText = `הסטריק הטוב ביותר: ${savedUser.bestStreak || 0}`;
+        cablotStatValue.innerText = savedUser.cablotCount || 0;
+        teilimStatValue.innerText = savedUser.teilimCount || 0;
+    } else {
+        alert("לא נמצאו פרטי משתמש.");
+    }   
+}
 // מאזין פיירבייס (ליתר ביטחון אם ה-Local Storage ריק)
 onAuthStateChanged(auth, (user) => {
     if (user) {
