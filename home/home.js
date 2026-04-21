@@ -3,6 +3,62 @@ import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebase
 import { getFirestore, doc, getDoc, collection, addDoc, serverTimestamp, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
+
+//let stnc30 = "";
+//כותרת דף הבית
+let stnc1 = "יהא מורא רבך כמורא שמיים";
+let stnc2 = "איזהו הגיבור הכובש את יצרו";
+let stnc3 = "איזהו עשיר השמח בחלקו";
+let stnc4 = "איזהו חכם הלומד מכל אדם";
+let stnc5 = "איזהו החכם הרואה את הנולד";
+let stnc6 = "מצווה גדולה להיות בשמחה תמיד";
+let stnc7 = "אין יאוש בעולם כלל";
+let stnc8 = "אין עוד מלבדו";
+let stnc9 = "ישתבח שמו לעד";
+let stnc10 = "ברוך שם כבוד מלכותו לעולם ועד";
+let stnc11 = "הוא אלוקינו אין עוד";
+let stnc12 = "גם היום הוא מתנה מבורא עולם";
+let stnc13 = "מה רבו מעשיך ה'";
+let stnc14 = "סור מרע ועשה טוב";
+let stnc15 = "בקש שלום ורודפהו";
+let stnc16 = "צדק צדק תרדוף";
+let stnc17 = "ואהבת לרעך כמוך";
+let stnc18 = "כבד את אביך ואת אמך למען יאריכון ימיך";
+let stnc19 = "ה' ילחם לכם ואתם תחרישון";
+let stnc20 = "שיוויתי ה' לנגדי תמיד";
+let stnc21 = "ברוך הגבר אשר יבטח בה'";
+let stnc22 = "כי עמך מקור חיים באורך נראה אור";
+let stnc23 = "שמור לשונך מרע ושפתיך מדבר מרמה";
+let stnc24 = "כמים הפנים לפנים כן לב האדם לאדם";
+let stnc25 = "דרכיה דרכי נועם וכל נתיבותיה שלום";
+let stnc26 = "שבע יפול צדיק וקם";
+let stnc27 = "מי האיש החפץ חיים - נצור לשונך מרע";
+let stnc28 = "שומר פיו ולשונו שומר מצרות נפשו";
+let stnc29 = "ה' רועי לא אחסר";
+let stnc30 = "ובכל דרכיך דעהו";
+let stnc31 = "ואהבת את ה' אלוקיך בכל לבבך ובכל נפשך ובכל מאודך";
+let stnc32 = "לא הביישן למד ולא הקפדן מלמד";
+let stnc33 = "במקומות שאין אנשים השתדל להיות איש";
+let stnc34 = "סייג לחוכמה - שתיקה";
+let stnc35 = "החכם עיניו בראשו";
+let stnc36 = "יהי כבוד חברך חביב עליך כשלך";
+let stnc37 = "איזהו מכובד המכבד את הבריות";
+let stnc38 = "טוב שם משמן טוב";
+let stnc39 = "אל תדין חברך עד שתגיע למקומו";
+let stnc40 = "מה ששנוא עליך אל תעשה לחבריך";
+let stnc41 = "דרך ארץ קדמה לתורה";
+let stnc42 = "יפה תלמוד תורה עם דרך ארץ";
+let stnc43 = "אהבת חינם היא הדרך לחיים מלאי שמחה";
+let stncList = [stnc1, stnc2, stnc3, stnc4, stnc5, stnc6, stnc7, stnc8, stnc9, stnc10, stnc11, stnc12, stnc13, stnc14, stnc15, stnc16, stnc17, stnc18, stnc19, stnc20, stnc21, stnc22, stnc23, stnc24, stnc25, stnc26, stnc27, stnc28, stnc29, stnc30, stnc31, stnc32, stnc33, stnc34, stnc35, stnc36, stnc37, stnc38, stnc39, stnc40, stnc41, stnc42, stnc43];
+
+let max = parseInt(stncList.length);
+let randomIndex = Math.floor(Math.random() * max);
+
+let mainTitle = document.getElementById("mainTitle");
+mainTitle.textContent = stncList[randomIndex];
+
+
+
 const firebaseConfig = {
     apiKey: "AIzaSyB8IFt-fo2KyTh4f0r9h0tYeu3YnxCiaSQ",
     authDomain: "new-smirat-abrit-db.firebaseapp.com",
