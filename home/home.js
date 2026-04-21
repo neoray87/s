@@ -4,7 +4,7 @@ import { getFirestore, doc, getDoc, collection, addDoc, serverTimestamp, onSnaps
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
 
-//let stnc30 = "";
+
 //כותרת דף הבית
 let stnc1 = "יהא מורא רבך כמורא שמיים";
 let stnc2 = "איזהו הגיבור הכובש את יצרו";
